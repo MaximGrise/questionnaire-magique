@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import './App.css';
 import Questions, { QuestionData } from './Questions';
 
 const App = () => {
 
-  const [formUrl, setFormUrl] = useState('https://raw.githubusercontent.com/MaximGrise/questionnaire-magique/master/questionnaires/exam_anglais.md');
+  const [cookies, setCookie, removeCookie] = useCookies(['questionnaire-magique.formUrl']);
   const [questionData, setQuestionData] = useState([] as QuestionData[]);
 
   useEffect(() => {
-    fetch(formUrl).then((response) => response.text()).then((formMarkdown) => {
-      setQuestionData(parse(formMarkdown))
-    });
-  }, [formUrl])
+    let url = cookies['questionnaire-magique.formUrl'];
+    if (!url || !url.trim().length) {
+      url = 'https://raw.githubusercontent.com/MaximGrise/questionnaire-magique/master/questionnaires/example.md';
+      setCookie('questionnaire-magique.formUrl', url)
+    }
+    fetch(url)
+      .then((response) => response.text()).then((formMarkdown) => {
+        setQuestionData(parse(formMarkdown))
+      });
+  }, [cookies['questionnaire-magique.formUrl']])
 
   return (
     <div className="App">
@@ -26,7 +33,10 @@ const App = () => {
         </a>
       </header>
       <section>
-        <input size={150} value={formUrl} onChange={(e) => setFormUrl(e.currentTarget.value)} />
+        <input size={150} value={cookies['questionnaire-magique.formUrl']} onChange={(e) => {
+          setCookie('questionnaire-magique.formUrl', e.currentTarget.value)
+
+        }} />
         <Questions
           questionData={questionData}
           selectAnswer={(questionIndex, answerIndex) => {
