@@ -1,0 +1,18 @@
+.question-choice {
+    cursor: pointer;
+}
+
+.question-choice:hover {
+    transform: scale(1.1)
+}
+.question-choice.selected {
+    font-weight: bolder;
+}
+
+.question-answer.valid {
+    color: green
+}
+
+.question-answer.invalid {
+    color: red;
+}
